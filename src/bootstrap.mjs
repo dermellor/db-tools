@@ -15,7 +15,8 @@ const buildClientOptions = (databaseUrl) => {
   if (!databaseUrl) {
     return null;
   }
-  const needsSsl = databaseUrl.includes("sslmode=require");
+  const needsSsl =
+    databaseUrl.includes("sslmode=require") || databaseUrl.includes("supabase.co");
   if (!needsSsl) {
     return { connectionString: databaseUrl };
   }
