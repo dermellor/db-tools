@@ -1,4 +1,5 @@
 const valueFlags = new Set(["--env", "-e", "--output", "--out", "-o"]);
+const booleanFlags = new Set(["--bootstrap"]);
 
 export const parseCliArgs = ({ argv, defaults, usage }) => {
   const options = { ...defaults };
@@ -8,6 +9,13 @@ export const parseCliArgs = ({ argv, defaults, usage }) => {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") {
       options.help = true;
+      continue;
+    }
+
+    if (booleanFlags.has(arg)) {
+      if (arg === "--bootstrap") {
+        options.bootstrap = true;
+      }
       continue;
     }
 

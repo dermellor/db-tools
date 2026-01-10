@@ -3,10 +3,11 @@ import path from "path";
 import { parseCliArgs } from "../src/cli-args.mjs";
 import { exportSql } from "../src/export.mjs";
 
-const usage = "Usage: db-tools-export-policies [--env path] [--output path]";
-const { env, output, help } = parseCliArgs({
+const usage =
+  "Usage: db-tools-export-policies [--env path] [--output path] [--bootstrap]";
+const { env, output, help, bootstrap } = parseCliArgs({
   argv: process.argv.slice(2),
-  defaults: { env: ".env.local", output: null, help: false },
+  defaults: { env: ".env.local", output: null, help: false, bootstrap: false },
   usage,
 });
 
@@ -35,4 +36,5 @@ await exportSql({
     });
     return formattedLines;
   },
+  bootstrap,
 });

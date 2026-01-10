@@ -19,3 +19,9 @@ db-tools-export-schema --env .env.local --output db/schema.sql
 Defaults:
 - `--env` defaults to `.env.local` in the current working directory.
 - `--output` defaults to `db/policies.sql`, `db/functions.sql`, or `db/schema.sql`.
+
+## Optional bootstrap
+
+If the export RPCs are missing, pass `--bootstrap` and set `DATABASE_URL`
+to a direct Postgres connection string. The tool will create the functions
+once and retry the export.

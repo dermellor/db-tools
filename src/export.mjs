@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
+import { maybeBootstrapFunction } from "./bootstrap.mjs";
 
 const loadEnv = (filePath) => {
   if (!filePath || !fs.existsSync(filePath)) {
@@ -38,6 +39,7 @@ export const exportSql = async ({
   outputPath,
   headerLines,
   transformLines,
+  bootstrap,
 }) => {
   const resolvedEnvPath = envPath ? resolvePath(envPath) : null;
   const resolvedOutputPath = resolvePath(outputPath);
@@ -59,7 +61,18 @@ export const exportSql = async ({
     auth: { persistSession: false },
   });
 
-  const { data, error } = await supabase.rpc(rpcName);
+  let { data, error } = await supabase.rpc(rpcName);
+
+  if (error && bootstrap) {
+    const bootstrapped = await maybeBootstrapFunction({
+      rpcName,
+      error,
+      databaseUrl: process.env.DATABASE_URL,
+    });
+    if (bootstrapped) {
+      ({ data, error } = await supabase.rpc(rpcName));
+    }
+  }
 
   if (error) {
     console.error(`Failed to export ${rpcName}:`, error.message);
