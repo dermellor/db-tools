@@ -20,6 +20,9 @@ const buildClientOptions = (databaseUrl) => {
   if (!needsSsl) {
     return { connectionString: databaseUrl };
   }
+  if (!process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  }
   return {
     connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
