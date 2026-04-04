@@ -164,6 +164,25 @@ index_lines as (
   select table_name, 3 as section, 1000000 as ord, '' as line
   from indexes
   group by table_name
+),
+col_comments as (
+  select t.table_name, a.attname as column_name, d.description
+  from tables t
+  join pg_attribute a on a.attrelid = t.oid
+  join pg_description d on d.objoid = t.oid and d.objsubid = a.attnum
+  where a.attnum > 0 and not a.attisdropped
+  order by t.table_name, a.attnum
+),
+comment_lines as (
+  select table_name, 4 as section,
+    row_number() over (partition by table_name order by column_name) as ord,
+    'COMMENT ON COLUMN public.' || table_name || '.' || column_name ||
+    ' IS ' || quote_literal(description) || ';' as line
+  from col_comments
+  union all
+  select table_name, 4 as section, 1000000 as ord, '' as line
+  from col_comments
+  group by table_name
 )
 select line
 from (
@@ -172,6 +191,8 @@ from (
   select table_name, section, ord, line from constraint_lines
   union all
   select table_name, section, ord, line from index_lines
+  union all
+  select table_name, section, ord, line from comment_lines
 ) t
 order by table_name, section, ord;
 $$;
