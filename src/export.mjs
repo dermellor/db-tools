@@ -70,6 +70,7 @@ export const exportSql = async ({
       databaseUrl: process.env.DATABASE_URL,
     });
     if (bootstrapped) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       ({ data, error } = await supabase.rpc(rpcName));
     }
   }

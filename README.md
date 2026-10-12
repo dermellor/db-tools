@@ -24,4 +24,4 @@ Defaults:
 
 If the export RPCs are missing, pass `--bootstrap` and set `DATABASE_URL`
 to a direct Postgres connection string. The tool will create the functions
-once and retry the export.
+once, notify PostgREST to reload the schema, and retry the export.

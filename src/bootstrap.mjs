@@ -52,6 +52,8 @@ export const maybeBootstrapFunction = async ({ rpcName, error, databaseUrl }) =>
   await client.connect();
   try {
     await client.query(sql);
+    await client.query("select pg_notify('pgrst', 'reload schema');");
+    await client.query("select pg_notify('pgrst', 'reload config');");
     console.log(`Bootstrapped ${rpcName} via DATABASE_URL.`);
   } finally {
     await client.end();
